@@ -1,3 +1,6 @@
+#ifndef motorcontrol_h
+#define motorcontrol_h
+
 //Parameters for sensor
 
 int sens_length = 0.17
@@ -6,6 +9,6 @@ int sens_thickness = 0.0014
 
 //Parameters for stepper motor and setup
 
-int steps_per_turn = 200
+int steps_per_turn = 200 /* 1.8deg per step */
 int turns_per_mm = 1 /*not sure*/
 int calib_default = -55
