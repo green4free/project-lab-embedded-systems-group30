@@ -7,7 +7,7 @@
 
 #define SENSE_DELAY 10
 
-stepper motor1(8, 9, 10);
+stepper motor1(8, 9, 10); 
 
 
 int readSensor(int nrOfSamples) {
@@ -52,15 +52,13 @@ void loop() {
     //Serial.println(command);
     switch (command) {
       case 'R':
-        motor1.step(-cantileverPosition);
-        cantileverPosition = 0;
+        cantileverPosition += motor1.step(-cantileverPosition);
         break;
         
       case 'D':
       case 'U':
         int movement = ((command == 'D') ? -1 : 1) * STEPS_PER_TURN * TURNS_PER_MM * MOVE_SIZE;
-        motor1.step(movement);
-        cantileverPosition += movement;
+        cantileverPosition += motor1.step(movement);
         
         double currentP = cantileverPosition / (STEPS_PER_TURN * TURNS_PER_MM);
         double data = calculateValue();

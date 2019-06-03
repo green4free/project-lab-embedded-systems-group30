@@ -1,6 +1,6 @@
 #include "motorcontrol.h"
 
-  stepper::stepper(int stepPin, int dirPin, int bottomPin) {
+  stepper::stepper(int stepPin, int dirPin, int bottomPin) { //Step and direction pins to the motor controller as well as pin to the switch detecting bottom position
     pinS = stepPin;
     pinD = dirPin;
     pinB = bottomPin;
@@ -12,18 +12,23 @@
   }
   
   
-  void stepper::step(int nrOfSteps) {
+  int stepper::step(int nrOfSteps) {
     if (nrOfSteps == 0)
-      return;
-      
-    digitalWrite(pinD, nrOfSteps > 0);
+      return 0;
+
+    bool up = nrOfSteps > 0;
+    digitalWrite(pinD, up);
     
-    for (int i = 0; i < abs(nrOfSteps); ++i) {
+    int i;
+    for (i = 0; i < abs(nrOfSteps) && (up || digitalRead(pinB) != LOW); ++i) {
       digitalWrite(pinS, HIGH);
       delay(STEPTIME / 2);
       digitalWrite(pinS, LOW);
       delay(STEPTIME / 2);
     }
+
+    return (up ? 1 : -1) * i; //returning sign of nrOfSteps multiplied by i, will be nrOfSteps if it was not stopped early.
+    
   }
 
 
@@ -39,6 +44,6 @@
       
       ++steps;
     }
-    return steps;
+    return -steps;
     
   }
