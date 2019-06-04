@@ -14,3 +14,12 @@
 #define SENS_LENGTH 0.17
 #define SENS_WIDTH 0.03
 #define SENS_THICKNSSS 0.0014
+
+
+//Standard values for sweep
+#define STD_NR_STOPS 10
+#define STD_NR_SAMPLES 10
+#define STD_START_POINT 0.0
+
+//Constants for communication
+#define SEND_PRECISION 4

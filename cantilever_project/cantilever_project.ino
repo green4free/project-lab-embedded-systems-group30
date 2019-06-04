@@ -1,11 +1,11 @@
 #include "motorcontrol.h"
+#include "user_io.h"
 #include "config.h"
 
 
 #include <math.h>
 #include <stdio.h>
 
-#define SENSE_DELAY 10
 
 stepper motor1(8, 9, 10); 
 
@@ -15,7 +15,6 @@ int readSensor(int nrOfSamples) {
     int mean = 0;
     for (int i = 0; i < nrOfSamples; ++i) {
       mean += analogRead(A3);
-      delay(SENSE_DELAY);
     }
     return mean / nrOfSamples;
 
@@ -39,46 +38,42 @@ void setup() {
 
 }
 
-byte precision = 4;
-char graphPrint[64];
-char logPrint[64];
 
-char vString[16], pString[16];
+
+
+
+userInput sweepConfig;
+bool startSweep = false;
+
 
 
 void loop() {
-  if (Serial.available() > 0) {
-    char command = Serial.read();
-    //Serial.println(command);
-    switch (command) {
-      case 'R':
-        cantileverPosition += motor1.step(-cantileverPosition);
-        break;
-        
-      case 'D':
-      case 'U':
-        int movement = ((command == 'D') ? -1 : 1) * STEPS_PER_TURN * TURNS_PER_MM * MOVE_SIZE;
-        cantileverPosition += motor1.step(movement);
-        
-        double currentP = cantileverPosition / (STEPS_PER_TURN * TURNS_PER_MM);
-        double data = calculateValue();
 
-        dtostrf(data, precision+3, precision, vString);
-        dtostrf(currentP, precision+3, precision, pString); //The sprintf provided in arduino stdio cant handle floats, so we have to do that conversion more manualy.
+  getInput(&sweepConfig, &startSweep);
 
-        sprintf(graphPrint, "res %s", vString);
-        Serial.println(graphPrint);
 
-        sprintf(logPrint, "data x%s, y%s", pString, vString);
-        Serial.println(logPrint);
+  if (startSweep) {
 
-        break;
+    int moveSize = (sweepConfig.endPoint - sweepConfig.startPoint) / (double)sweepConfig.nrOfStops * STEPS_PER_TURN * TURNS_PER_MM;
+
+    cantileverPosition += motor1.step((int)(sweepConfig.startPoint * STEPS_PER_TURN * TURNS_PER_MM) - cantileverPosition);
+
+    double currentP = ((double)cantileverPosition) / ((double)(STEPS_PER_TURN * TURNS_PER_MM));
+    double data = calculateValue();
+    sendData(currentP, data);
+    
+    for (int i = 0; i < sweepConfig.nrOfStops; ++i) {
+      cantileverPosition += motor1.step(moveSize);
       
+      currentP = ((double)cantileverPosition) / ((double)(STEPS_PER_TURN * TURNS_PER_MM));
+      data = calculateValue();
+      sendData(currentP, data);
     }
     
-    while (Serial.available() > 0) //We only care about the first byte, so clear the rest
-      Serial.read(); 
+    startSweep = false;  
   }
+
+  
 
   delay(3);
 }

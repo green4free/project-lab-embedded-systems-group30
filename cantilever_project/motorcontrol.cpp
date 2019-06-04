@@ -1,5 +1,5 @@
 #include "motorcontrol.h"
-
+#include "Arduino.h"
   stepper::stepper(int stepPin, int dirPin, int bottomPin) { //Step and direction pins to the motor controller as well as pin to the switch detecting bottom position
     pinS = stepPin;
     pinD = dirPin;
