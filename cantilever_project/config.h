@@ -1,5 +1,8 @@
 #pragma once
 
+
+//#define DEBUG
+
 //Motor data
 #define STEPS_PER_TURN 200
 #define TURNS_PER_MM 1

@@ -53,7 +53,9 @@ void loop() {
 
 
   if (startSweep) {
-
+    
+    sweepConfig.nrOfStops += 1; //Add one to include endpoint, given value will be number of stops between start and end. They should always be measured
+    
     int moveSize = (sweepConfig.endPoint - sweepConfig.startPoint) / (double)sweepConfig.nrOfStops * STEPS_PER_TURN * TURNS_PER_MM;
 
     cantileverPosition += motor1.step((int)(sweepConfig.startPoint * STEPS_PER_TURN * TURNS_PER_MM) - cantileverPosition);

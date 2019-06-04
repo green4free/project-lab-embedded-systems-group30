@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+char logPrint[64];
+
 char inputBuffer[64];
 
 void getInput(userInput* data, bool* go) {
@@ -20,16 +22,27 @@ void getInput(userInput* data, bool* go) {
 		*go = true;
 	} else if (command == 'S') { //S for Set
         char* readPtr = inputBuffer;
-        
+        #ifdef DEBUG
+        sprintf(logPrint, "data Debug:%s", readPtr);
+        Serial.println(logPrint);
+        #endif
         data->endPoint = strtod(readPtr, &readPtr);
         
         if (readPtr - inputBuffer < i - 1) {
+            #ifdef DEBUG
+            sprintf(logPrint, "data Debug:%s", readPtr);
+            Serial.println(logPrint);
+            #endif
             data->startPoint = strtod(readPtr, &readPtr);
         } else {
             data->startPoint = STD_START_POINT;
         }
         
         if (readPtr - inputBuffer < i - 1) {
+            #ifdef DEBUG
+            sprintf(logPrint, "data Debug:%s", readPtr);
+            Serial.println(logPrint);
+            #endif
             data->nrOfStops = strtol(readPtr, &readPtr, 10);
             if (data->nrOfStops == 0)
                 data->nrOfStops = STD_NR_STOPS;
@@ -38,12 +51,22 @@ void getInput(userInput* data, bool* go) {
         }
         
         if (readPtr - inputBuffer < i - 1) {
+            #ifdef DEBUG
+            sprintf(logPrint, "data Debug:%s", readPtr);
+            Serial.println(logPrint);
+            #endif
             data->nrOfSamples = strtol(readPtr, &readPtr, 10);
             if (data->nrOfSamples == 0)
                 data->nrOfSamples = STD_NR_SAMPLES;
         } else {
             data->nrOfSamples = STD_NR_SAMPLES;
         }
+
+        #ifdef DEBUG
+        sprintf(logPrint, "data EndDebug:%d %d", data->nrOfStops, data->nrOfSamples);
+        Serial.println(logPrint);
+        #endif
+        
     }
   	
   }
@@ -54,7 +77,7 @@ void getInput(userInput* data, bool* go) {
 
 
 char graphPrint[64];
-char logPrint[64];
+
 
 char vString[16], pString[16];
 
@@ -70,5 +93,3 @@ void sendData(double position, double value) {
     Serial.println(logPrint);
 
 }
-
-
