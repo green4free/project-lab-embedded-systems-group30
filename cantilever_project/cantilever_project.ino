@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 
-stepper motor1(8, 9, 10); 
+stepper motor1(8, 9, 10, 11); 
 
 
 int readSensor(int nrOfSamples) {

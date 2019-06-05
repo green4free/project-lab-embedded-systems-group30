@@ -9,12 +9,12 @@
 
 class stepper {
 public:
-  stepper(int stepPin, int dirPin, int bottomPin); //Step and direction pins to the motor controller as well as pin to the switch detecting bottom position
+  stepper(int stepPin, int dirPin, int bottomPin, int topPin); //Step and direction pins to the motor controller as well as pins to the switchs detecting hitting the top or bottom
   
   int step(int nrOfSteps);
 
   int goToBottom(void);
 
 private:
-  int pinS, pinD, pinB;
+  int pinS, pinD, pinB, pinT;
 };
