@@ -23,7 +23,7 @@
 #define STD_START_POINT 0.0
 
 //Stat
-#define NUMBER_OF_SAMPLES 1000
+#define NUMBER_OF_SAMPLES 500
 #define MAXIMUM_Z_SCORE 2.0
 
 //Constants for communication

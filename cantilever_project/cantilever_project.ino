@@ -9,47 +9,59 @@
 
 stepper motor1(8, 9, 10, 11); 
 
-//double sensorValues[NUMBER_OF_SAMPLES];
+#define REMOVE_OUTLIERS
+
+
+#ifdef REMOVE_OUTLIERS
+int sensorValues[NUMBER_OF_SAMPLES];
 double readSensor(void) {
-
-
-
+  
     double mean0 = 0.0;
     for (int i = 0; i < NUMBER_OF_SAMPLES; ++i) {
-      /*
-      sensorValues[i] = ((double)analogRead(A3)) / 1024.0 * 5.0;
-      mean0 += sensorValues[i] / ((double)NUMBER_OF_SAMPLES);
-      */
-
-      mean0 += ((double)analogRead(A3))/ ((double)NUMBER_OF_SAMPLES);
+      sensorValues[i] = analogRead(A3);
+      mean0 += ((double)sensorValues[i]) / ((double)NUMBER_OF_SAMPLES);
       
       delay(5);
     }
-/*
+
     double stdDiv = 0.0;
 
     for (int i = 0; i < NUMBER_OF_SAMPLES; ++i) {
-      double tmp = sensorValues[i] - mean0;
+      double tmp = ((double)sensorValues[i]) - mean0;
       stdDiv += (tmp * tmp) / ((double)NUMBER_OF_SAMPLES);
     }
 
     stdDiv = sqrt(stdDiv);
 
-    double mean1 = 0.0;
-    int usedSamples;
+    
+    int usedSamples = 0;
 
     for (int i = 0; i < NUMBER_OF_SAMPLES; ++i) {
-      if (fabs(sensorValues[i] - mean0) / stdDiv < MAXIMUM_Z_SCORE) {
-        mean1 += sensorValues[i];
+      if (fabs(((double)sensorValues[i]) - mean0) / stdDiv < MAXIMUM_Z_SCORE) {
         ++usedSamples;
+      } else {
+        mean0 -= ((double)sensorValues[i]) / ((double)NUMBER_OF_SAMPLES); //Instead of adding the good values again, subtract the bad ones from the old mean
       }
     }
     
-    return mean1 / ((double) usedSamples); //Mean voltage
-*/
+    mean0 *= ((double)NUMBER_OF_SAMPLES) / ((double)usedSamples); //And then change the divider
 
-  return mean0 / 1024.0 * 5.0;
+    return mean0 / 1024.0 * 5.0;
 }
+
+#else //REMOVE_OUTLIERS
+
+double readSensor(void) {
+  
+    double mean0 = 0.0;
+    for (int i = 0; i < NUMBER_OF_SAMPLES; ++i) {
+      mean0 += ((double)analogRead(A3)) / ((double)NUMBER_OF_SAMPLES);
+      delay(5);
+    }
+    
+    return mean0 / 1024.0 * 5.0;
+
+#endif //REMOVE_OUTLIERS
 
 
 double calculateResistance(double voltage) {
