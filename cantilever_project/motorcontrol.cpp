@@ -25,9 +25,9 @@
     for (i = 0; i < abs(nrOfSteps) && (up || digitalRead(pinB) != LOW) && ((!up) || digitalRead(pinT) != LOW); ++i) { //Only check top switch if going up, and vice versa. So that the motor is not 
                                                                                                                       //  stopped if trying to leave end position.
       digitalWrite(pinS, HIGH);
-      delay(STEPTIME / 2);
+      delayMicroseconds(STEPTIME / 2);
       digitalWrite(pinS, LOW);
-      delay(STEPTIME / 2);
+      delayMicroseconds(STEPTIME / 2);
     }
 
     return (up ? 1 : -1) * i; //returning sign of nrOfSteps multiplied by i, will be nrOfSteps if it was not stopped early.
@@ -41,12 +41,12 @@
 
     while(digitalRead(pinB) != LOW) {
       digitalWrite(pinS, HIGH);
-      delay(STEPTIME / 2);
+      delayMicroseconds(STEPTIME / 2);
       digitalWrite(pinS, LOW);
-      delay(STEPTIME / 2);
+      delayMicroseconds(STEPTIME / 2);
       
-      ++steps;
+      --steps;
     }
-    return -steps;
+    return steps;
     
   }

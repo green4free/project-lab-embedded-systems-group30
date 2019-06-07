@@ -10,20 +10,31 @@
 stepper motor1(8, 9, 10, 11); 
 
 
-int readSensor(int nrOfSamples) {
+double readSensor(int nrOfSamples) {
 
-    int mean = 0;
+    double mean = 0.0;
     for (int i = 0; i < nrOfSamples; ++i) {
-      mean += analogRead(A3);
+      mean += ((double)analogRead(A3)) / ((double)nrOfSamples);
+      delay(5);
     }
-    return mean / nrOfSamples;
+    return mean / 1024.0 * 5.0; //Mean voltage
 
 }
 
-double g = 0;
-double calculateValue() {
-    return sin(++g / 7.0);
+
+double calculateResistance(double voltage) {
+    return (voltage * REFERENCE_RESISTANCE) / (5.0 - voltage);
   }
+
+
+double zeroDeflectionResistance;
+
+double resistanceToStrain(double resistance) {
+  return (resistance - zeroDeflectionResistance) / resistance / FACTOR_COEFICIEN_THING;
+}
+
+
+
 
 
 int cantileverPosition;
@@ -31,11 +42,12 @@ int cantileverPosition;
 
 void setup() {
   Serial.begin(115200);
-
+  pinMode(A3, INPUT);
   motor1.goToBottom();
   motor1.step(ZERO_DEFELCTION_POINT);
   cantileverPosition = 0;
-
+  delay(2000);
+  zeroDeflectionResistance = calculateResistance(readSensor(500));
 }
 
 
@@ -59,16 +71,16 @@ void loop() {
     int moveSize = (sweepConfig.endPoint - sweepConfig.startPoint) / (double)sweepConfig.nrOfStops * STEPS_PER_TURN * TURNS_PER_MM;
 
     cantileverPosition += motor1.step((int)(sweepConfig.startPoint * STEPS_PER_TURN * TURNS_PER_MM) - cantileverPosition);
-
+    delay(4000);
     double currentP = ((double)cantileverPosition) / ((double)(STEPS_PER_TURN * TURNS_PER_MM));
-    double data = calculateValue();
+    double data = calculateResistance(readSensor(sweepConfig.nrOfSamples));
     sendData(currentP, data);
     
     for (int i = 0; i < sweepConfig.nrOfStops; ++i) {
       cantileverPosition += motor1.step(moveSize);
-      
+      delay(2000); 
       currentP = ((double)cantileverPosition) / ((double)(STEPS_PER_TURN * TURNS_PER_MM));
-      data = calculateValue();
+      data = calculateResistance(readSensor(sweepConfig.nrOfSamples));
       sendData(currentP, data);
     }
     

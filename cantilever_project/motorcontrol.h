@@ -4,7 +4,7 @@
 
 
 
-#define STEPTIME 2
+#define STEPTIME 1500
 
 
 class stepper {

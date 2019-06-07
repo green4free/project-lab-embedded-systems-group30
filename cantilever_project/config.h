@@ -5,12 +5,11 @@
 
 //Motor data
 #define STEPS_PER_TURN 200
-#define TURNS_PER_MM 1
+#define TURNS_PER_MM 2.3707
 
 
-//Behavioral dat
-#define MOVE_SIZE 5 //In mm
-#define ZERO_DEFELCTION_POINT 5 //In steps, can be changed, don't know whats best.. Current value to not make the "calibration" take so long time, will be corrected when we have a real setup
+//Behavioral data
+#define ZERO_DEFELCTION_POINT 13276 //In steps, can be changed, don't know whats best.. Current value to not make the "calibration" take so long time, will be corrected when we have a real setup
 
 
 //Sensor data
@@ -26,3 +25,9 @@
 
 //Constants for communication
 #define SEND_PRECISION 4
+
+
+
+//Sensor parameters
+#define REFERENCE_RESISTANCE 16390.0
+#define FACTOR_COEFICIEN_THING 2.06 //Find better name
