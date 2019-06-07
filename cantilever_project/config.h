@@ -20,8 +20,11 @@
 
 //Standard values for sweep
 #define STD_NR_STOPS 10
-#define STD_NR_SAMPLES 10
 #define STD_START_POINT 0.0
+
+//Stat
+#define NUMBER_OF_SAMPLES 1000
+#define MAXIMUM_Z_SCORE 2.0
 
 //Constants for communication
 #define SEND_PRECISION 4

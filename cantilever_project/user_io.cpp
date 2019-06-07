@@ -50,20 +50,9 @@ void getInput(userInput* data, bool* go) {
             data->nrOfStops = STD_NR_STOPS;
         }
         
-        if (readPtr - inputBuffer < i - 1) {
-            #ifdef DEBUG
-            sprintf(logPrint, "data Debug:%s", readPtr);
-            Serial.println(logPrint);
-            #endif
-            data->nrOfSamples = strtol(readPtr, &readPtr, 10);
-            if (data->nrOfSamples == 0)
-                data->nrOfSamples = STD_NR_SAMPLES;
-        } else {
-            data->nrOfSamples = STD_NR_SAMPLES;
-        }
 
         #ifdef DEBUG
-        sprintf(logPrint, "data EndDebug:%d %d", data->nrOfStops, data->nrOfSamples);
+        sprintf(logPrint, "data EndDebug:%d", data->nrOfStops);
         Serial.println(logPrint);
         #endif
         
@@ -79,17 +68,18 @@ void getInput(userInput* data, bool* go) {
 char graphPrint[64];
 
 
-char vString[16], pString[16];
+char rString[16], pString[16], sString[16];
 
 
-void sendData(double position, double value) {
-    dtostrf(value, SEND_PRECISION+3, SEND_PRECISION, vString);
+void sendData(double position, double resistance, double strain) {
+    dtostrf(resistance, SEND_PRECISION+3, SEND_PRECISION, rString);
+    dtostrf(strain, SEND_PRECISION+3, SEND_PRECISION, sString);
     dtostrf(position, SEND_PRECISION+3, SEND_PRECISION, pString); //The sprintf provided in arduino stdio cant handle floats, so we have to do that conversion more manualy.
 
-    sprintf(graphPrint, "res %s", vString);
+    sprintf(graphPrint, "res %s", rString);
     Serial.println(graphPrint);
 
-    sprintf(logPrint, "data x%s, y%s", pString, vString);
+    sprintf(logPrint, "data pos%s, res%s, str%s", pString, rString, sString);
     Serial.println(logPrint);
 
 }

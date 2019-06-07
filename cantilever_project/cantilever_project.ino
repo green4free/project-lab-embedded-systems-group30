@@ -9,16 +9,46 @@
 
 stepper motor1(8, 9, 10, 11); 
 
+//double sensorValues[NUMBER_OF_SAMPLES];
+double readSensor(void) {
 
-double readSensor(int nrOfSamples) {
 
-    double mean = 0.0;
-    for (int i = 0; i < nrOfSamples; ++i) {
-      mean += ((double)analogRead(A3)) / ((double)nrOfSamples);
+
+    double mean0 = 0.0;
+    for (int i = 0; i < NUMBER_OF_SAMPLES; ++i) {
+      /*
+      sensorValues[i] = ((double)analogRead(A3)) / 1024.0 * 5.0;
+      mean0 += sensorValues[i] / ((double)NUMBER_OF_SAMPLES);
+      */
+
+      mean0 += ((double)analogRead(A3))/ ((double)NUMBER_OF_SAMPLES);
+      
       delay(5);
     }
-    return mean / 1024.0 * 5.0; //Mean voltage
+/*
+    double stdDiv = 0.0;
 
+    for (int i = 0; i < NUMBER_OF_SAMPLES; ++i) {
+      double tmp = sensorValues[i] - mean0;
+      stdDiv += (tmp * tmp) / ((double)NUMBER_OF_SAMPLES);
+    }
+
+    stdDiv = sqrt(stdDiv);
+
+    double mean1 = 0.0;
+    int usedSamples;
+
+    for (int i = 0; i < NUMBER_OF_SAMPLES; ++i) {
+      if (fabs(sensorValues[i] - mean0) / stdDiv < MAXIMUM_Z_SCORE) {
+        mean1 += sensorValues[i];
+        ++usedSamples;
+      }
+    }
+    
+    return mean1 / ((double) usedSamples); //Mean voltage
+*/
+
+  return mean0 / 1024.0 * 5.0;
 }
 
 
@@ -33,7 +63,9 @@ double resistanceToStrain(double resistance) {
   return (resistance - zeroDeflectionResistance) / resistance / FACTOR_COEFICIEN_THING;
 }
 
-
+double deflectionToStrain(double deflection) {
+  return 0.05984 * deflection;  
+}
 
 
 
@@ -47,7 +79,7 @@ void setup() {
   motor1.step(ZERO_DEFELCTION_POINT);
   cantileverPosition = 0;
   delay(2000);
-  zeroDeflectionResistance = calculateResistance(readSensor(500));
+  zeroDeflectionResistance = calculateResistance(readSensor());
 }
 
 
@@ -73,15 +105,15 @@ void loop() {
     cantileverPosition += motor1.step((int)(sweepConfig.startPoint * STEPS_PER_TURN * TURNS_PER_MM) - cantileverPosition);
     delay(4000);
     double currentP = ((double)cantileverPosition) / ((double)(STEPS_PER_TURN * TURNS_PER_MM));
-    double data = calculateResistance(readSensor(sweepConfig.nrOfSamples));
-    sendData(currentP, data);
+    double data = calculateResistance(readSensor());
+    sendData(currentP, data, deflectionToStrain(currentP / 1000.0));
     
     for (int i = 0; i < sweepConfig.nrOfStops; ++i) {
       cantileverPosition += motor1.step(moveSize);
       delay(2000); 
       currentP = ((double)cantileverPosition) / ((double)(STEPS_PER_TURN * TURNS_PER_MM));
-      data = calculateResistance(readSensor(sweepConfig.nrOfSamples));
-      sendData(currentP, data);
+      data = calculateResistance(readSensor());
+      sendData(currentP, data, deflectionToStrain(currentP / 1000.0));
     }
     
     startSweep = false;  
