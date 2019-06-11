@@ -7,9 +7,9 @@
 #include <stdio.h>
 
 
-stepper motor1(8, 9, 10, 11); 
+stepper motor1(9, 8, 10, 11); 
 
-#define REMOVE_OUTLIERS
+//#define REMOVE_OUTLIERS
 
 
 #ifdef REMOVE_OUTLIERS
@@ -60,7 +60,7 @@ double readSensor(void) {
     }
     
     return mean0 / 1024.0 * 5.0;
-
+}
 #endif //REMOVE_OUTLIERS
 
 
