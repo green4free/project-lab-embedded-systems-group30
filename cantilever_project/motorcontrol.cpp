@@ -1,16 +1,20 @@
 #include "motorcontrol.h"
 #include "Arduino.h"
-  stepper::stepper(int stepPin, int dirPin, int bottomPin, int topPin) { //Step and direction pins to the motor controller as well as pin to the switch detecting bottom position
-    pinS = stepPin;
-    pinD = dirPin;
-    pinB = bottomPin;
-    pinT = topPin;
+  stepper::stepper(int pinA, int pinB, int pinC, int pinD, int bottomPin, int topPin) {
+    pinA = pinA;
+    pinB = pinB;
+    pinC = pinC;
+    pinD = pinD;
+    sB = bottomPin;
+    sT = topPin;
 
-    pinMode(pinS, OUTPUT);
+    pinMode(pinA, OUTPUT);
+    pinMode(pinB, OUTPUT);
+    pinMode(pinC, OUTPUT);
     pinMode(pinD, OUTPUT);
-    pinMode(pinB, INPUT_PULLUP);
-    pinMode(pinT, INPUT_PULLUP);
-    digitalWrite(pinS, LOW);
+    
+    pinMode(sB, INPUT_PULLUP);
+    pinMode(sT, INPUT_PULLUP);
   }
   
   
@@ -19,15 +23,15 @@
       return 0;
 
     bool up = nrOfSteps > 0;
-    digitalWrite(pinD, up);
     
     int i;
-    for (i = 0; i < abs(nrOfSteps) && (up || digitalRead(pinB) != LOW) && ((!up) || digitalRead(pinT) != LOW); ++i) { //Only check top switch if going up, and vice versa. So that the motor is not 
+    for (i = 0; i < abs(nrOfSteps) && (up || digitalRead(sB) != LOW) && ((!up) || digitalRead(sT) != LOW); ++i) { //Only check top switch if going up, and vice versa. So that the motor is not 
                                                                                                                       //  stopped if trying to leave end position.
-      digitalWrite(pinS, HIGH);
-      delayMicroseconds(STEPTIME / 2);
-      digitalWrite(pinS, LOW);
-      delayMicroseconds(STEPTIME / 2);
+      digitalWrite(pinA, (up ? i : (i + 3)) % 4 == 0);
+      digitalWrite(pinB, (up ? (i + 1) : (i + 2)) % 4 == 0);
+      digitalWrite(pinC, (up ? (i + 2) : (i + 1)) % 4 == 0);
+      digitalWrite(pinB, (up ? (i + 3) : i) % 4 == 0);
+      delayMicroseconds(STEPTIME);
     }
 
     return (up ? 1 : -1) * i; //returning sign of nrOfSteps multiplied by i, will be nrOfSteps if it was not stopped early.
@@ -36,17 +40,17 @@
 
 
   int stepper::goToBottom(void) {
-    digitalWrite(pinD, LOW);
     int steps = 0;
 
-    while(digitalRead(pinB) != LOW) {
-      digitalWrite(pinS, HIGH);
-      delayMicroseconds(STEPTIME / 2);
-      digitalWrite(pinS, LOW);
-      delayMicroseconds(STEPTIME / 2);
+    while(digitalRead(sB) != LOW) {
+      digitalWrite(pinA, (steps + 3) % 4 == 0);
+      digitalWrite(pinB, (steps + 2) % 4 == 0);
+      digitalWrite(pinC, (steps + 1) % 4 == 0);
+      digitalWrite(pinB, steps % 4 == 0);
+      delayMicroseconds(STEPTIME);
       
-      --steps;
+      ++steps;
     }
-    return steps;
+    return -steps;
     
   }
