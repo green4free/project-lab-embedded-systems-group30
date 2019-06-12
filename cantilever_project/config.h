@@ -32,5 +32,5 @@
 
 
 //Sensor parameters
-#define REFERENCE_RESISTANCE 16390.0
+#define REFERENCE_RESISTANCE 9930.0
 #define FACTOR_COEFICIEN_THING 2.06 //Find better name
