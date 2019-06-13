@@ -9,7 +9,7 @@
 
 
 //Behavioral data
-#define ZERO_DEFELCTION_POINT 13276 //In steps, can be changed, don't know whats best.. Current value to not make the "calibration" take so long time, will be corrected when we have a real setup
+#define ZERO_DEFELCTION_POINT (13276 + 7112) //In steps, can be changed, don't know whats best.. Current value to not make the "calibration" take so long time, will be corrected when we have a real setup
 
 
 //Sensor data

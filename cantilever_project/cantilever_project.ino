@@ -110,15 +110,15 @@ void loop() {
 
   if (startSweep) {
     
-    sweepConfig.nrOfStops += 1; //Add one to include endpoint, given value will be number of stops between start and end. They should always be measured
+    sweepConfig.nrOfStops += 1;//Add one to include endpoint, given value will be number of stops between start and end.
     
-    int moveSize = (sweepConfig.endPoint - sweepConfig.startPoint) / (double)sweepConfig.nrOfStops * STEPS_PER_TURN * TURNS_PER_MM;
+    int moveSize = (sweepConfig.endPoint - sweepConfig.startPoint) / (double)sweepConfig.nrOfStops * STEPS_PER_TURN * TURNS_PER_MM; //Calculate the movesize in steps, to move between the stops
 
     cantileverPosition += motor1.step((int)(sweepConfig.startPoint * STEPS_PER_TURN * TURNS_PER_MM) - cantileverPosition);
-    delay(4000);
+    delay(4000); //Wait so that the cantilever stabilises before sampling the sensor. This wait is longer than the later once as initial move to this position was probobaly longer and the cantilever might threfor be vibrating more.
     double currentP = ((double)cantileverPosition) / ((double)(STEPS_PER_TURN * TURNS_PER_MM));
     double data = calculateResistance(readSensor());
-    sendData(currentP, data, deflectionToStrain(currentP / 1000.0));
+    sendData(currentP, data, deflectionToStrain(currentP / 1000.0)); //Divide position with 1000 to convert the value from mm to m when calculating strain
     
     for (int i = 0; i < sweepConfig.nrOfStops; ++i) {
       cantileverPosition += motor1.step(moveSize);
