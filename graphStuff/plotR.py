@@ -1,0 +1,36 @@
+
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import rc
+
+
+rc('text', usetex=True)
+
+downStrain = -100.0 * np.array([0.0, -0.0003, -0.0006, -0.0009, -0.0012, -0.0015, -0.0018])
+upStrain = downStrain[::-1]
+
+downRes = np.array([9475.8887, 9481.9775, 9496.4229, 9509.5771, 9536.2773, 9550.8828, 9591.7578])
+upRes = np.array([9587.2949, 9566.7783, 9550.5059, 9519.7139, 9519.3105, 9499.3262, 9470.0068])
+
+zeroR = 9475.625
+
+downDRbR = 100.0 * (downRes - zeroR) / zeroR
+upDRbR = 100.0 * (upRes - zeroR) / zeroR
+
+
+g = 0.0
+for i in range(0, len(downDRbR) - 1):
+    g += (downDRbR[i + 1] - downDRbR[i]) / (downStrain[i + 1] - downStrain[i]) + (upDRbR[i + 1] - upDRbR[i]) / (upStrain[i + 1] - upStrain[i])
+
+
+print( g / (2.0 * (len(downDRbR) - 1)))
+
+plt.plot(downStrain, downDRbR,marker='o', label=r'\LARGE Loading')
+plt.plot(upStrain, upDRbR,marker='o', label=r'\LARGE Unloading')
+
+plt.legend(loc='upper left')
+
+plt.xlabel(r'\huge strain')
+plt.ylabel(r'\huge $\frac{\Delta R}{R_0}$')
+
+plt.show()
