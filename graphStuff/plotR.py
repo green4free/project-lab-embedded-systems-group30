@@ -33,4 +33,11 @@ plt.legend(loc='upper left')
 plt.xlabel(r'\huge strain')
 plt.ylabel(r'\huge $\frac{\Delta R}{R_0}$')
 
+
+print ("Strain Loading ", downStrain)
+print ("deltaR/R Loading", downDRbR)
+
+print ("Strain Unloading ", upStrain)
+print ("deltaR/R Unloading", upDRbR)
+
 plt.show()
